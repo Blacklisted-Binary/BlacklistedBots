@@ -1,6 +1,6 @@
 import { useSwarmStore } from '../../store/useSwarmStore';
 import type { BackendSession } from '../../hooks/useBackendSession';
-import { PROVIDERS, PROVIDER_LABELS, PROVIDER_COLORS } from '../../types';
+import { PROVIDERS, PROVIDER_LABELS, PROVIDER_COLORS, PROXY_PORT } from '../../types';
 
 interface Props {
   session: BackendSession;
@@ -67,7 +67,7 @@ export default function Inspector({ session }: Props) {
         <Field label="Model" value={model || 'default'} />
         <Field
           label="Proxy Route"
-          value={`:3141/${provider}`}
+          value={`:${PROXY_PORT}/${provider}`}
         />
         <Field
           label="Status"

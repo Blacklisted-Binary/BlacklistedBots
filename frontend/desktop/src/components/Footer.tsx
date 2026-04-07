@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Circle } from '@phosphor-icons/react';
 import type { BackendSession } from '../hooks/useBackendSession';
 import { useSwarmStore } from '../store/useSwarmStore';
+import { PROXY_PORT } from '../types';
 
 interface Props {
   session: BackendSession;
@@ -45,7 +46,7 @@ export default function Footer({ session }: Props) {
       </div>
 
       <span className="text-border">│</span>
-      <span>Port: 3141</span>
+      <span>Port: {PROXY_PORT}</span>
 
       <span className="text-border">│</span>
       <span>{agentCount} agent{agentCount !== 1 ? 's' : ''}</span>

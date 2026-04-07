@@ -1,7 +1,7 @@
 import { Lightning } from '@phosphor-icons/react';
 import { useSwarmStore } from '../store/useSwarmStore';
 import type { BackendSession } from '../hooks/useBackendSession';
-import { PROVIDERS, PROVIDER_LABELS, PROVIDER_COLORS, type Provider } from '../types';
+import { PROVIDERS, PROVIDER_LABELS, PROVIDER_COLORS, type Provider, PROXY_PORT } from '../types';
 
 interface Props {
   session: BackendSession;
@@ -62,7 +62,7 @@ export default function Header({ session }: Props) {
             : session.ready
               ? 'ready'
               : 'connecting…'}
-          {' · '}Port 3141
+          {' · '}Port {PROXY_PORT}
           {totalTokens > 0 && ` · ${tokenLabel} tokens`}
         </span>
       </div>

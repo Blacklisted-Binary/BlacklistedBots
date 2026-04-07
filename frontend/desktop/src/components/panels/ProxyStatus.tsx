@@ -1,5 +1,5 @@
 import { useSwarmStore } from '../../store/useSwarmStore';
-import { PROVIDERS, PROVIDER_LABELS, type Provider } from '../../types';
+import { PROVIDERS, PROVIDER_LABELS, type Provider, PROXY_PORT } from '../../types';
 
 function ProviderRow({ provider }: { provider: Provider }) {
   const status = useSwarmStore((s) => s.proxyStatus[provider]);
@@ -46,7 +46,7 @@ export default function ProxyStatus() {
           Provider Auth Status
         </h3>
         <p className="text-xs text-text-dimmed mt-0.5">
-          Free proxy routes via AIClient-2-API on port 3141
+          Free proxy routes via AIClient-2-API on port {PROXY_PORT}
         </p>
       </div>
       {PROVIDERS.map((p) => (

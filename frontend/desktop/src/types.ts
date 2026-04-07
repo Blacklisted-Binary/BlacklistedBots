@@ -3,6 +3,9 @@
  *  and extends them with SwarmForge-specific additions.               *
  * ------------------------------------------------------------------ */
 
+/** Default port for the AIClient-2-API proxy sidecar. */
+export const PROXY_PORT = 3141;
+
 export type Provider = 'gemini' | 'claude' | 'grok' | 'chatgpt';
 
 export const PROVIDERS: Provider[] = ['gemini', 'claude', 'grok', 'chatgpt'];
