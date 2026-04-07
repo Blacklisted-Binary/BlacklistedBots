@@ -1,0 +1,10 @@
+{
+  "identifier": "default",
+  "description": "Default capabilities for SwarmForge — grants the renderer access to core Tauri APIs and the custom backend IPC commands.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:event:allow-listen",
+    "core:event:allow-emit"
+  ]
+}

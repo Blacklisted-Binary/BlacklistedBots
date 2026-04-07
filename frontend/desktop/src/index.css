@@ -1,0 +1,84 @@
+/* ------------------------------------------------------------------ *
+ *  Tailwind v4 entry — all design tokens live here as CSS variables.  *
+ *  Utilities like `bg-bg-base`, `text-agent-gemini`, etc. are derived *
+ *  automatically from the `--color-*` namespace below.                *
+ * ------------------------------------------------------------------ */
+@import "tailwindcss";
+
+@theme {
+  /* ── Surfaces ─────────────────────────────────────────────────── */
+  --color-bg-base:    #0D0F14;
+  --color-bg-panel:   #141720;
+  --color-bg-hover:   #1a1f2e;
+  --color-border:     #1E2334;
+
+  /* ── Accent ───────────────────────────────────────────────────── */
+  --color-accent:     #6366F1;
+  --color-accent-dim: #4f51c7;
+  --color-cyan:       #22D3EE;
+
+  /* ── Provider brand colours ───────────────────────────────────── */
+  --color-agent-gemini:  #4285F4;
+  --color-agent-claude:  #CC785C;
+  --color-agent-grok:    #1DA1F2;
+  --color-agent-chatgpt: #10A37F;
+
+  /* ── Semantic ─────────────────────────────────────────────────── */
+  --color-success: #34D399;
+  --color-warning: #FBBF24;
+  --color-error:   #F87171;
+
+  /* ── Text ─────────────────────────────────────────────────────── */
+  --color-text-primary: #E2E8F0;
+  --color-text-dimmed:  #64748B;
+  --color-text-label:   #94A3B8;
+
+  /* ── Typography ───────────────────────────────────────────────── */
+  --font-ui:   'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Cascadia Code', monospace;
+}
+
+/* ── Base resets ────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg-base); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-dimmed); }
+
+/* ── ReactFlow overrides ────────────────────────────────────────── */
+.react-flow__background { background-color: var(--color-bg-base) !important; }
+.react-flow__controls { background: var(--color-bg-panel) !important; border: 1px solid var(--color-border) !important; }
+.react-flow__controls-button { background: var(--color-bg-panel) !important; border-color: var(--color-border) !important; fill: var(--color-text-label) !important; }
+.react-flow__minimap { background: var(--color-bg-panel) !important; border: 1px solid var(--color-border) !important; }
+
+/* ── Data-pulse wire animation ──────────────────────────────────── */
+@keyframes pulse-along {
+  0%   { stroke-dashoffset: 100; }
+  100% { stroke-dashoffset: 0; }
+}
+.edge-animated {
+  stroke-dasharray: 8 4;
+  animation: pulse-along 1.2s linear infinite;
+}
+
+/* ── Agent status pulse ─────────────────────────────────────────── */
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+.status-pulse { animation: status-pulse 1.4s ease-in-out infinite; }
