@@ -1,5 +1,6 @@
-import { Lightning } from '@phosphor-icons/react';
+import { Lightning, Gear } from '@phosphor-icons/react';
 import { useSwarmStore } from '../store/useSwarmStore';
+import { useProxyStore } from '../store/useProxyStore';
 import type { BackendSession } from '../hooks/useBackendSession';
 import { PROVIDERS, PROVIDER_LABELS, PROVIDER_COLORS, type Provider, PROXY_PORT } from '../types';
 
@@ -33,6 +34,8 @@ function AgentPill({ provider, streaming }: { provider: Provider; streaming: boo
 
 export default function Header({ session }: Props) {
   const totalTokens = useSwarmStore((s) => s.totalTokens);
+  const setProxySettingsOpen = useSwarmStore((s) => s.setProxySettingsOpen);
+  const connectionStatus = useProxyStore((s) => s.connectionStatus);
   const swarmTeammates = session.swarmTeammates;
   const activeCount = swarmTeammates.filter((t) => t.status === 'running').length;
   const streamingProviders = new Set(
@@ -44,6 +47,13 @@ export default function Header({ session }: Props) {
 
   const tokenLabel =
     totalTokens >= 1000 ? `${(totalTokens / 1000).toFixed(0)}k` : String(totalTokens);
+
+  const proxyDot =
+    connectionStatus === 'connected'
+      ? { color: 'var(--color-success)', title: 'Proxy connected' }
+      : connectionStatus === 'connecting'
+      ? { color: '#F59E0B', title: 'Proxy connecting…' }
+      : { color: 'var(--color-error)', title: 'Proxy offline' };
 
   return (
     <header
@@ -67,12 +77,27 @@ export default function Header({ session }: Props) {
         </span>
       </div>
 
-      {/* Agent pills */}
+      {/* Right side */}
       <div className="flex items-center gap-2">
+        {/* Agent pills */}
         {PROVIDERS.map((p) => (
           <AgentPill key={p} provider={p} streaming={streamingProviders.has(p)} />
         ))}
+
+        {/* Proxy status dot + settings button */}
+        <button
+          onClick={() => setProxySettingsOpen(true)}
+          title={proxyDot.title}
+          className="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-white/5 transition-colors text-text-dimmed hover:text-text-primary"
+        >
+          <span
+            className="w-2 h-2 rounded-full shrink-0"
+            style={{ background: proxyDot.color }}
+          />
+          <Gear size={15} />
+        </button>
       </div>
     </header>
   );
 }
+

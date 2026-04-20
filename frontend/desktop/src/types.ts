@@ -1,31 +1,37 @@
 /* ------------------------------------------------------------------ *
  *  Shared type definitions — mirrors frontend/terminal/src/types.ts  *
- *  and extends them with SwarmForge-specific additions.               *
+ *  and extends them with SwarmForge + BlacklistedAIProxy integration. *
  * ------------------------------------------------------------------ */
 
-/** Default port for the AIClient-2-API proxy sidecar. */
-export const PROXY_PORT = 3141;
+// ── BlacklistedAIProxy server defaults ──────────────────────────────────────
 
-export type Provider = 'gemini' | 'claude' | 'grok' | 'chatgpt' | 'antigravity' | 'kilo';
+/** Default port the BlacklistedAIProxy worker process listens on. */
+export const PROXY_PORT = 3000;
 
-export const PROVIDERS: Provider[] = ['gemini', 'claude', 'grok', 'chatgpt', 'antigravity', 'kilo'];
+/** Default port the BlacklistedAIProxy master management process listens on. */
+export const PROXY_MASTER_PORT = 3100;
+
+/** Base URL for all proxy management REST API calls. */
+export const PROXY_API_BASE = `http://localhost:${PROXY_PORT}`;
+
+// ── Simplified provider type (SwarmForge agent canvas) ──────────────────────
+
+export type Provider = 'gemini' | 'claude' | 'grok' | 'chatgpt';
+
+export const PROVIDERS: Provider[] = ['gemini', 'claude', 'grok', 'chatgpt'];
 
 export const PROVIDER_LABELS: Record<Provider, string> = {
   gemini: 'Gemini',
   claude: 'Claude',
   grok: 'Grok',
   chatgpt: 'ChatGPT',
-  antigravity: 'Antigravity',
-  kilo: 'Kilo',
 };
 
 export const PROVIDER_MODELS: Record<Provider, string[]> = {
-  gemini: ['gemini-2.0-flash', 'gemini-2.0-pro', 'gemini-1.5-pro'],
-  claude: ['claude-sonnet-4-5', 'claude-opus-4', 'claude-haiku-4-5'],
-  grok: ['grok-3', 'grok-3-mini'],
-  chatgpt: ['gpt-5', 'gpt-4o', 'o3'],
-  antigravity: ['antigravity-pro', 'antigravity-flash'],
-  kilo: ['kilo-1', 'kilo-fast'],
+  gemini: ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-3-pro-preview'],
+  claude: ['claude-opus-4-6', 'claude-sonnet-4-6', 'claude-haiku-4-5'],
+  grok: ['grok-4.20', 'grok-4.20-fast', 'grok-4.1-mini'],
+  chatgpt: ['gpt-5', 'gpt-5-codex', 'gpt-5.1-codex'],
 };
 
 export const PROVIDER_COLORS: Record<Provider, string> = {
@@ -33,100 +39,310 @@ export const PROVIDER_COLORS: Record<Provider, string> = {
   claude: '#CC785C',
   grok: '#1DA1F2',
   chatgpt: '#10A37F',
-  antigravity: '#7C3AED',
-  kilo: '#F59E0B',
-};
-
-/** OAuth entry-point URLs and proxy route info per provider. */
-export const PROVIDER_OAUTH_INFO: Record<Provider, { authUrl: string; proxyPath: string; description: string }> = {
-  gemini: {
-    authUrl: 'http://localhost:3141/auth/start/gemini',
-    proxyPath: `http://localhost:${PROXY_PORT}/gemini/v1beta`,
-    description: 'Sign in with your Google account to access Gemini CLI for free.',
-  },
-  claude: {
-    authUrl: 'http://localhost:3141/auth/start/claude',
-    proxyPath: `http://localhost:${PROXY_PORT}/claude/v1`,
-    description: 'Sign in with Anthropic to use Claude without an API key.',
-  },
-  grok: {
-    authUrl: 'http://localhost:3141/auth/start/grok',
-    proxyPath: `http://localhost:${PROXY_PORT}/grok/v1`,
-    description: 'Sign in with X (Twitter) to access Grok AI.',
-  },
-  chatgpt: {
-    authUrl: 'http://localhost:3141/auth/start/chatgpt',
-    proxyPath: `http://localhost:${PROXY_PORT}/openai/v1`,
-    description: 'Sign in with OpenAI to use ChatGPT via the proxy.',
-  },
-  antigravity: {
-    authUrl: 'http://localhost:3141/auth/start/antigravity',
-    proxyPath: `http://localhost:${PROXY_PORT}/antigravity/v1`,
-    description: 'Antigravity is a free Claude-compatible proxy. No account required.',
-  },
-  kilo: {
-    authUrl: 'http://localhost:3141/auth/start/kilo',
-    proxyPath: `http://localhost:${PROXY_PORT}/kilo/v1`,
-    description: 'Sign in with Kilo to access AI models through the BlacklistedAPIProxy.',
-  },
 };
 
 export type ProxyStatus = 'auth' | 'pending' | 'offline';
 
-// ── OAuth & Proxy configuration types ───────────────────────────────────────
+// ── BlacklistedAIProxy — real provider types ─────────────────────────────────
+// These keys match the actual providerType identifiers used in the proxy's
+// config system (config.json MODEL_PROVIDER, provider_pools.json keys, etc.).
 
-export interface OAuthSession {
-  provider: Provider;
-  /** Display name or email of the authenticated account. */
-  accountLabel: string;
-  /** Opaque token stored by the proxy — never exposed to the UI. */
-  tokenRef: string;
-  expiresAt: number | null;
-  authenticatedAt: number;
+export type ProxyProviderType =
+  | 'gemini-cli-oauth'
+  | 'gemini-antigravity'
+  | 'claude-kiro-oauth'
+  | 'claude-custom'
+  | 'openai-codex-oauth'
+  | 'openai-qwen-oauth'
+  | 'openai-iflow'
+  | 'grok-custom'
+  | 'forward-api';
+
+export const PROXY_PROVIDERS: ProxyProviderType[] = [
+  'gemini-cli-oauth',
+  'gemini-antigravity',
+  'claude-kiro-oauth',
+  'claude-custom',
+  'openai-codex-oauth',
+  'openai-qwen-oauth',
+  'openai-iflow',
+  'grok-custom',
+  'forward-api',
+];
+
+export const PROXY_PROVIDER_LABELS: Record<ProxyProviderType, string> = {
+  'gemini-cli-oauth': 'Gemini CLI (OAuth)',
+  'gemini-antigravity': 'Antigravity (Gemini)',
+  'claude-kiro-oauth': 'Claude Kiro (OAuth)',
+  'claude-custom': 'Claude (API Key)',
+  'openai-codex-oauth': 'Codex (OAuth)',
+  'openai-qwen-oauth': 'Qwen (OAuth)',
+  'openai-iflow': 'iFlow',
+  'grok-custom': 'Grok (Cookies/SSO)',
+  'forward-api': 'Forward API',
+};
+
+export const PROXY_PROVIDER_COLORS: Record<ProxyProviderType, string> = {
+  'gemini-cli-oauth': '#4285F4',
+  'gemini-antigravity': '#1A73E8',
+  'claude-kiro-oauth': '#CC785C',
+  'claude-custom': '#B06040',
+  'openai-codex-oauth': '#10A37F',
+  'openai-qwen-oauth': '#FF6A00',
+  'openai-iflow': '#7C3AED',
+  'grok-custom': '#1DA1F2',
+  'forward-api': '#64748B',
+};
+
+/** Authentication method required for each provider type. */
+export type ProxyAuthMethod = 'oauth-browser' | 'api-key' | 'cookie' | 'file-upload' | 'none';
+
+export const PROXY_PROVIDER_AUTH: Record<ProxyProviderType, ProxyAuthMethod> = {
+  'gemini-cli-oauth': 'oauth-browser',
+  'gemini-antigravity': 'oauth-browser',
+  'claude-kiro-oauth': 'oauth-browser',
+  'claude-custom': 'api-key',
+  'openai-codex-oauth': 'oauth-browser',
+  'openai-qwen-oauth': 'oauth-browser',
+  'openai-iflow': 'oauth-browser',
+  'grok-custom': 'cookie',
+  'forward-api': 'none',
+};
+
+/** Human-readable description of what each provider offers. */
+export const PROXY_PROVIDER_DESCRIPTIONS: Record<ProxyProviderType, string> = {
+  'gemini-cli-oauth': 'Sign in with Google to access Gemini 2.5/3.x models for free via the Gemini CLI OAuth flow.',
+  'gemini-antigravity': 'OAuth-based Antigravity Gemini endpoint. Supports cross-provider models including Claude via Gemini.',
+  'claude-kiro-oauth': 'Sign in with Kiro (AWS SSO) to access Claude Opus/Sonnet/Haiku 4.x models at no cost.',
+  'claude-custom': 'Use a standard Anthropic API key. Supports custom base URLs for compatible endpoints.',
+  'openai-codex-oauth': 'Sign in with your OpenAI account to access Codex / GPT-5 models via OAuth — no paid plan required.',
+  'openai-qwen-oauth': 'Sign in with Alibaba Cloud to access Qwen3 coder and vision models for free.',
+  'openai-iflow': 'iFlow OAuth token. Access Qwen, Kimi K2, DeepSeek, GLM models through the iFlow gateway.',
+  'grok-custom': 'Provide Grok SSO cookie + Cloudflare clearance to bypass bot detection and access Grok 4.x.',
+  'forward-api': 'Generic OpenAI-compatible forwarding proxy. Point to any compatible API endpoint.',
+};
+
+/**
+ * Models per proxy provider — mirrors provider-models.js from BlacklistedAIProxy.
+ * Empty array = models are dynamically fetched from the provider at runtime.
+ */
+export const PROXY_PROVIDER_MODELS: Record<ProxyProviderType, string[]> = {
+  'gemini-cli-oauth': [
+    'gemini-2.5-flash',
+    'gemini-2.5-flash-lite',
+    'gemini-2.5-pro',
+    'gemini-2.5-pro-preview-06-05',
+    'gemini-2.5-flash-preview-09-2025',
+    'gemini-3-pro-preview',
+    'gemini-3-flash-preview',
+    'gemini-3.1-pro-preview',
+    'gemini-3.1-flash-lite-preview',
+  ],
+  'gemini-antigravity': [
+    'gemini-3-flash',
+    'gemini-3.1-pro-high',
+    'gemini-3.1-pro-low',
+    'gemini-3.1-flash-image',
+    'gemini-3-flash-agent',
+    'gemini-2.5-flash',
+    'gemini-2.5-flash-lite',
+    'gemini-2.5-flash-thinking',
+    'gemini-claude-sonnet-4-6',
+    'gemini-claude-opus-4-6-thinking',
+  ],
+  'claude-kiro-oauth': [
+    'claude-haiku-4-5',
+    'claude-opus-4-6',
+    'claude-sonnet-4-6',
+    'claude-opus-4-5',
+    'claude-opus-4-5-20251101',
+    'claude-sonnet-4-5',
+    'claude-sonnet-4-5-20250929',
+    'claude-sonnet-4-20250514',
+    'claude-3-7-sonnet-20250219',
+  ],
+  'claude-custom': [],
+  'openai-codex-oauth': [
+    'gpt-5',
+    'gpt-5-codex',
+    'gpt-5-codex-mini',
+    'gpt-5.1',
+    'gpt-5.1-codex',
+    'gpt-5.1-codex-mini',
+    'gpt-5.1-codex-max',
+    'gpt-5.2',
+    'gpt-5.2-codex',
+    'gpt-5.3-codex',
+    'gpt-5.3-codex-spark',
+  ],
+  'openai-qwen-oauth': [
+    'coder-model',
+    'vision-model',
+    'qwen3-coder-plus',
+    'qwen3-coder-flash',
+  ],
+  'openai-iflow': [
+    'qwen3-coder-plus',
+    'qwen3-max',
+    'qwen3-vl-plus',
+    'qwen3-max-preview',
+    'qwen3-235b',
+    'kimi-k2',
+    'kimi-k2-0905',
+    'deepseek-v3',
+    'deepseek-r1',
+    'glm-4.6',
+  ],
+  'grok-custom': [
+    'grok-4.1-mini',
+    'grok-4.1-thinking',
+    'grok-4.20',
+    'grok-4.20-auto',
+    'grok-4.20-fast',
+    'grok-4.20-expert',
+    'grok-4.20-heavy',
+  ],
+  'forward-api': [],
+};
+
+// ── Provider pool node shape (mirrors provider_pools.json) ──────────────────
+
+/** A single credential node in a provider pool. */
+export interface ProxyPoolNode {
+  uuid: string;
+  customName: string;
+  isHealthy: boolean;
+  isDisabled: boolean;
+  lastUsed: string | null;
+  usageCount: number;
+  errorCount: number;
+  lastErrorTime: string | null;
+  checkModelName: string | null;
+  checkHealth: boolean;
+  // Gemini CLI
+  GEMINI_OAUTH_CREDS_FILE_PATH?: string;
+  PROJECT_ID?: string;
+  // Antigravity
+  ANTIGRAVITY_OAUTH_CREDS_FILE_PATH?: string;
+  // Kiro (Claude)
+  KIRO_OAUTH_CREDS_FILE_PATH?: string;
+  // Qwen
+  QWEN_OAUTH_CREDS_FILE_PATH?: string;
+  // iFlow
+  IFLOW_TOKEN_FILE_PATH?: string;
+  IFLOW_BASE_URL?: string;
+  // Claude custom
+  CLAUDE_API_KEY?: string;
+  CLAUDE_BASE_URL?: string;
+  // OpenAI / forward
+  OPENAI_API_KEY?: string;
+  OPENAI_BASE_URL?: string;
+  // Grok
+  GROK_COOKIE_TOKEN?: string;
+  GROK_CF_CLEARANCE?: string;
+  GROK_USER_AGENT?: string;
+  GROK_BASE_URL?: string;
 }
 
-export interface ProxyConfig {
-  provider: Provider;
-  proxyUrl: string;
-  enabled: boolean;
-  /** Route all AI traffic for this provider through the proxy. */
-  useAsDefault: boolean;
+/** Summary returned by GET /api/providers/{type}. */
+export interface ProxyProviderSummary {
+  providerType: ProxyProviderType;
+  totalNodes: number;
+  healthyNodes: number;
+  disabledNodes: number;
+  nodes: ProxyPoolNode[];
 }
 
-export interface MultiAccountEntry {
+/** All providers summary returned by GET /api/providers. */
+export type ProxyProviderMap = Partial<Record<ProxyProviderType, ProxyProviderSummary>>;
+
+// ── Global proxy config (mirrors config.json.example) ───────────────────────
+
+export interface ModelFallbackTarget {
+  targetProviderType: string;
+  targetModel: string;
+}
+
+export interface ProxyGlobalConfig {
+  REQUIRED_API_KEY: string;
+  SERVER_PORT: number;
+  HOST: string;
+  MODEL_PROVIDER: string;
+  DEFAULT_MODEL_PROVIDERS?: string[];
+  REQUEST_MAX_RETRIES: number;
+  REQUEST_BASE_DELAY: number;
+  CRON_REFRESH_TOKEN: boolean;
+  CRON_NEAR_MINUTES: number;
+  MAX_ERROR_COUNT: number;
+  PROXY_URL: string | null;
+  PROXY_ENABLED_PROVIDERS: string[];
+  LOG_ENABLED: boolean;
+  LOG_LEVEL: string;
+  LOG_OUTPUT_MODE: string;
+  LOG_DIR: string;
+  TLS_SIDECAR_ENABLED: boolean;
+  TLS_SIDECAR_PORT: number;
+  HYBRID_GATEWAY_ENABLED: boolean;
+  HYBRID_GATEWAY_URL: string;
+  HYBRID_GATEWAY_CANARY_PERCENT: number;
+  providerFallbackChain: Record<string, string[]>;
+  modelFallbackMapping: Record<string, ModelFallbackTarget>;
+  SYSTEM_PROMPT_MODE: string;
+  SYSTEM_PROMPT_CONTENT?: string | null;
+  GROK_COOKIE_TOKEN?: string;
+  GROK_CF_CLEARANCE?: string;
+  GROK_USER_AGENT?: string;
+  GROK_BASE_URL?: string;
+}
+
+// ── Potluck API types (mirrors api-potluck-*.json) ──────────────────────────
+
+export interface PotluckCredential {
   id: string;
-  provider: Provider;
-  accountLabel: string;
-  tokenRef: string;
-  active: boolean;
-  addedAt: number;
+  path: string;
+  provider: string;
+  authMethod: string;
+  addedAt: string;
 }
 
-export interface PotluckSettings {
+export interface PotluckBonus {
+  credentialId: string;
+  grantedAt: string;
+  usedCount: number;
+}
+
+export interface PotluckUser {
+  credentials: PotluckCredential[];
+  credentialBonuses: PotluckBonus[];
+  createdAt: string;
+}
+
+export interface PotluckPoolConfig {
+  defaultDailyLimit: number;
+  bonusPerCredential: number;
+  bonusValidityDays: number;
+  persistInterval: number;
+}
+
+export interface PotluckData {
+  config: PotluckPoolConfig;
+  users: Record<string, PotluckUser>;
+}
+
+export interface PotluckKey {
+  id: string;
+  name: string;
+  createdAt: string;
+  dailyLimit: number;
+  todayUsage: number;
+  totalUsage: number;
+  lastResetDate: string;
+  lastUsedAt: string | null;
   enabled: boolean;
-  poolName: string;
-  autoRotate: boolean;
-  /** Max requests per account per day before rotating. 0 = unlimited. */
-  dailyRotateLimit: number;
-  contributeToPool: boolean;
+  bonusRemaining: number;
 }
 
-export type RoutingStrategy = 'manual' | 'cheapest' | 'fastest' | 'round-robin' | 'task-based';
-
-export interface AIRoutingRule {
-  /** Keyword or task category that triggers this rule. */
-  taskPattern: string;
-  preferredProvider: Provider;
-  fallbackProvider: Provider | null;
-}
-
-export interface AIRoutingSettings {
-  enabled: boolean;
-  strategy: RoutingStrategy;
-  rules: AIRoutingRule[];
-  /** Provider priority order for fallback. */
-  fallbackOrder: Provider[];
-}
+// ── Agent types (existing) ───────────────────────────────────────────────────
 
 export type AgentStatus = 'running' | 'idle' | 'done' | 'error';
 
@@ -160,7 +376,7 @@ export type CanvasMode = 'graph' | 'chat';
 
 export type RightPanelTab = 'inspector' | 'proxy' | 'trace' | 'output';
 
-// ── Backend protocol types (identical to terminal frontend) ─────────
+// ── Backend protocol types (identical to terminal frontend) ─────────────────
 
 export interface TranscriptItem {
   role: 'system' | 'user' | 'assistant' | 'tool' | 'tool_result' | 'log';

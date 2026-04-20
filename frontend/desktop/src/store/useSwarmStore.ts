@@ -64,6 +64,10 @@ interface SwarmStore {
   setAgentBuilderOpen: (open: boolean) => void;
   crewBuilderOpen: boolean;
   setCrewBuilderOpen: (open: boolean) => void;
+  setupWizardOpen: boolean;
+  setSetupWizardOpen: (open: boolean) => void;
+  proxySettingsOpen: boolean;
+  setProxySettingsOpen: (open: boolean) => void;
 
   // ── Left rail collapse state ──────────────────────────────────────
   railSections: Record<string, boolean>;
@@ -83,8 +87,6 @@ const defaultProxyStatus: Record<Provider, ProxyStatus> = {
   claude: 'offline',
   grok: 'offline',
   chatgpt: 'offline',
-  antigravity: 'offline',
-  kilo: 'offline',
 };
 
 export const useSwarmStore = create<SwarmStore>((set) => ({
@@ -160,6 +162,10 @@ export const useSwarmStore = create<SwarmStore>((set) => ({
   setAgentBuilderOpen: (open) => set({ agentBuilderOpen: open }),
   crewBuilderOpen: false,
   setCrewBuilderOpen: (open) => set({ crewBuilderOpen: open }),
+  setupWizardOpen: false,
+  setSetupWizardOpen: (open) => set({ setupWizardOpen: open }),
+  proxySettingsOpen: false,
+  setProxySettingsOpen: (open) => set({ proxySettingsOpen: open }),
 
   // ── Left rail collapse state ──────────────────────────────────────
   railSections: {
@@ -167,6 +173,7 @@ export const useSwarmStore = create<SwarmStore>((set) => ({
     teams: true,
     crews: true,
     proxy: true,
+    zeroKey: true,
   },
   toggleRailSection: (section) =>
     set((s) => ({

@@ -1,7 +1,17 @@
-import { CaretDown, CaretRight, Plus, Robot, UsersThree, Cpu } from '@phosphor-icons/react';
+import { CaretDown, CaretRight, Plus, Robot, UsersThree, Cpu, MagicWand, Gear } from '@phosphor-icons/react';
 import { useSwarmStore } from '../store/useSwarmStore';
+import { useProxyStore } from '../store/useProxyStore';
 import type { BackendSession } from '../hooks/useBackendSession';
-import { PROVIDERS, PROVIDER_LABELS, PROVIDER_COLORS, type Provider } from '../types';
+import {
+  PROVIDERS,
+  PROVIDER_LABELS,
+  PROVIDER_COLORS,
+  type Provider,
+  PROXY_PROVIDERS,
+  PROXY_PROVIDER_LABELS,
+  PROXY_PROVIDER_COLORS,
+  type ProxyProviderType,
+} from '../types';
 
 interface Props {
   session: BackendSession;
@@ -81,8 +91,49 @@ function ProxyRow({ provider }: { provider: Provider }) {
   );
 }
 
+/** Row for a BlacklistedAIProxy provider node. */
+function ProxyProviderRow({ providerType }: { providerType: ProxyProviderType }) {
+  const { providers, connectionStatus } = useProxyStore();
+  const setSetupWizardOpen = useSwarmStore((s) => s.setSetupWizardOpen);
+  const summary = providers[providerType];
+  const healthy = (summary?.healthyNodes ?? 0) > 0;
+  const color = healthy ? PROXY_PROVIDER_COLORS[providerType] : '#64748B';
+  const label = PROXY_PROVIDER_LABELS[providerType].split(' ')[0];
+
+  return (
+    <div className="flex items-center justify-between px-4 py-1 text-xs hover:bg-bg-hover">
+      <div className="flex items-center gap-2" style={{ color }}>
+        <span
+          style={{
+            width: 6,
+            height: 6,
+            borderRadius: '50%',
+            background: color,
+            display: 'inline-block',
+            flexShrink: 0,
+          }}
+        />
+        <span className="truncate max-w-[100px]">{label}</span>
+      </div>
+      {healthy ? (
+        <span className="text-success text-xs">{summary!.healthyNodes}✓</span>
+      ) : connectionStatus !== 'offline' ? (
+        <button
+          onClick={() => setSetupWizardOpen(true)}
+          className="text-xs px-1.5 py-0.5 rounded border border-border hover:border-accent hover:text-accent text-text-dimmed transition-colors"
+          title={`Set up ${PROXY_PROVIDER_LABELS[providerType]}`}
+        >
+          Setup
+        </button>
+      ) : (
+        <span className="text-text-dimmed text-xs">offline</span>
+      )}
+    </div>
+  );
+}
+
 export default function LeftRail({ session }: Props) {
-  const { agents, crews, railSections, setAgentBuilderOpen, setCrewBuilderOpen } =
+  const { agents, crews, railSections, setAgentBuilderOpen, setCrewBuilderOpen, setSetupWizardOpen, setProxySettingsOpen } =
     useSwarmStore();
   const { swarmTeammates } = session;
 
@@ -173,13 +224,38 @@ export default function LeftRail({ session }: Props) {
         </div>
       )}
 
-      {/* ── PROXY ───────────────────────────────────────────────── */}
+      {/* ── PROXY (simple 4-provider canvas view) ───────────────── */}
       <SectionHeader label="Proxy" sectionKey="proxy" />
       {railSections['proxy'] && (
         <div className="pb-1">
           {PROVIDERS.map((p) => (
             <ProxyRow key={p} provider={p} />
           ))}
+        </div>
+      )}
+
+      {/* ── ZERO-KEY PROVIDERS (BlacklistedAIProxy) ─────────────── */}
+      <SectionHeader label="Zero-Key" sectionKey="zeroKey" />
+      {railSections['zeroKey'] && (
+        <div className="pb-1">
+          {PROXY_PROVIDERS.map((p) => (
+            <ProxyProviderRow key={p} providerType={p} />
+          ))}
+          <div className="flex items-center gap-1 px-3 pt-1.5 pb-0.5">
+            <button
+              onClick={() => setSetupWizardOpen(true)}
+              className="flex-1 flex items-center justify-center gap-1 px-2 py-1 text-xs rounded border border-border text-text-dimmed hover:border-accent hover:text-accent transition-colors"
+            >
+              <MagicWand size={11} /> Setup Wizard
+            </button>
+            <button
+              onClick={() => setProxySettingsOpen(true)}
+              className="flex items-center justify-center px-2 py-1 text-xs rounded border border-border text-text-dimmed hover:border-accent hover:text-accent transition-colors"
+              title="Proxy Settings"
+            >
+              <Gear size={11} />
+            </button>
+          </div>
         </div>
       )}
 
@@ -197,3 +273,4 @@ export default function LeftRail({ session }: Props) {
     </aside>
   );
 }
+

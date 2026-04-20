@@ -1,0 +1,11 @@
+{
+  "gemini-cli-oauth": [],
+  "gemini-antigravity": [],
+  "claude-kiro-oauth": [],
+  "claude-custom": [],
+  "openai-codex-oauth": [],
+  "openai-qwen-oauth": [],
+  "openai-iflow": [],
+  "grok-custom": [],
+  "forward-api": []
+}
