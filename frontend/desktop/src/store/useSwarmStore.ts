@@ -83,6 +83,8 @@ const defaultProxyStatus: Record<Provider, ProxyStatus> = {
   claude: 'offline',
   grok: 'offline',
   chatgpt: 'offline',
+  antigravity: 'offline',
+  kilo: 'offline',
 };
 
 export const useSwarmStore = create<SwarmStore>((set) => ({
