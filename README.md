@@ -135,7 +135,7 @@ xychart-beta
     bar [34, 52, 91]
 ```
 
-_Illustrative marketing visualization, not a formal benchmark study._
+_This is an illustrative marketing visualization, not a formal benchmark study._
 
 > Translation: less ceremony, more shipped output.
 
@@ -269,7 +269,7 @@ Not “AI but make it cute.”
 
 | Signal | Status |
 |---|---|
-| Unit + integration coverage | Repository docs report 114 unit/integration tests |
+| Unit + integration coverage | 114 passing unit/integration tests (project-reported) |
 | Tooling surface | 43+ tools |
 | CLI output modes | text / json / stream-json |
 | License | MIT |
