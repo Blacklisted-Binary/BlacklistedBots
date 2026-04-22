@@ -1,0 +1,36 @@
+{
+  "name": "blacklisted-api",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "BlacklistedAIProxy — bundled sidecar for SwarmForge. Provides OAuth-based zero-API-key access to Gemini CLI, Claude Kiro, Codex, Qwen, Grok, and more.",
+  "dependencies": {
+    "@anthropic-ai/tokenizer": "^0.0.4",
+    "@opentelemetry/api": "1.9.1",
+    "@opentelemetry/exporter-trace-otlp-http": "0.214.0",
+    "@opentelemetry/instrumentation-http": "0.214.0",
+    "@opentelemetry/sdk-node": "0.214.0",
+    "adm-zip": "^0.5.16",
+    "axios": "^1.14.0",
+    "deepmerge": "^4.3.1",
+    "dotenv": "^16.4.5",
+    "google-auth-library": "^10.1.0",
+    "http-proxy-agent": "^7.0.2",
+    "https-proxy-agent": "^7.0.6",
+    "langfuse": "3.38.20",
+    "lodash": "^4.17.21",
+    "multer": "^2.0.2",
+    "open": "^10.2.0",
+    "socks-proxy-agent": "^8.0.5",
+    "undici": "^7.12.0",
+    "uuid": "^11.1.0",
+    "ws": "^8.19.0"
+  },
+  "scripts": {
+    "start": "node src/core/master.js",
+    "start:standalone": "node src/services/api-server.js",
+    "start:dev": "node src/core/master.js --dev"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

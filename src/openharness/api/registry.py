@@ -31,7 +31,7 @@ class ProviderSpec:
     display_name: str = ""  # shown in status / diagnostics
 
     # Routing
-    backend_type: str = "openai_compat"  # "anthropic" | "openai_compat" | "copilot"
+    backend_type: str = "openai_compat"  # "anthropic" | "openai_compat" | "copilot" | "proxy_oauth"
     default_base_url: str = ""  # fallback base URL for this provider
 
     # Auto-detection signals

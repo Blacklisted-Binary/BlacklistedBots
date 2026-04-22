@@ -1,0 +1,55 @@
+{
+    "REQUIRED_API_KEY": "changeme",
+    "SERVER_PORT": 3000,
+    "HOST": "0.0.0.0",
+    "MODEL_PROVIDER": "gemini-cli-oauth",
+    "SYSTEM_PROMPT_MODE": "append",
+    "REQUEST_MAX_RETRIES": 3,
+    "REQUEST_BASE_DELAY": 1000,
+    "CRON_NEAR_MINUTES": 15,
+    "CRON_REFRESH_TOKEN": false,
+    "PROVIDER_POOLS_FILE_PATH": "configs/provider_pools.json",
+    "MAX_ERROR_COUNT": 10,
+    "PROXY_URL": null,
+    "PROXY_ENABLED_PROVIDERS": [],
+    "providerFallbackChain": {
+        "gemini-cli-oauth": ["gemini-antigravity"],
+        "gemini-antigravity": ["gemini-cli-oauth"],
+        "claude-kiro-oauth": ["claude-custom"],
+        "claude-custom": ["claude-kiro-oauth"]
+    },
+    "modelFallbackMapping": {
+        "gemini-claude-sonnet-4-6": {
+            "targetProviderType": "claude-kiro-oauth",
+            "targetModel": "claude-sonnet-4-6"
+        },
+        "gemini-claude-opus-4-6-thinking": {
+            "targetProviderType": "claude-kiro-oauth",
+            "targetModel": "claude-opus-4-6"
+        }
+    },
+    "LOG_ENABLED": true,
+    "LOG_OUTPUT_MODE": "all",
+    "LOG_LEVEL": "info",
+    "LOG_DIR": "logs",
+    "LOG_INCLUDE_REQUEST_ID": true,
+    "LOG_INCLUDE_TIMESTAMP": true,
+    "LOG_MAX_FILE_SIZE": 10485760,
+    "LOG_MAX_FILES": 10,
+    "TLS_SIDECAR_ENABLED": false,
+    "TLS_SIDECAR_PORT": 9090,
+    "HYBRID_GATEWAY_ENABLED": false,
+    "HYBRID_GATEWAY_URL": "",
+    "HYBRID_GATEWAY_PATHS": [
+        "/v1/chat/completions",
+        "/v1/responses",
+        "/v1/messages",
+        "/v1beta/models/*"
+    ],
+    "HYBRID_GATEWAY_CANARY_PERCENT": 100,
+    "HYBRID_GATEWAY_TIMEOUT_MS": 120000,
+    "HYBRID_GATEWAY_CACHE_ENABLED": true,
+    "HYBRID_GATEWAY_CACHE_TTL_MS": 15000,
+    "HYBRID_GATEWAY_CACHE_MAX_ENTRIES": 200,
+    "HYBRID_GATEWAY_CACHE_MAX_BODY_BYTES": 1048576
+}
