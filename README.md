@@ -51,7 +51,7 @@ If your current AI workflow still feels like “copy-paste and pray,” this REA
 | Category | BLACKLISTEDBOTS stance |
 |---|---|
 | Identity | Open agent harness with operator-grade workflows |
-| Personality | Blacklisted Binary Labs: dark, witty, precise |
+| Personality | The Blacklisted Binary Labs persona: dark, witty, precise |
 | Differentiator | Tool execution + memory + permissions + multi-agent orchestration |
 | Audience | Builders, researchers, automators, workflow architects |
 | Promise | Faster execution, safer operations, cleaner extensibility |
@@ -134,6 +134,8 @@ xychart-beta
     y-axis "Execution Efficiency" 0 --> 100
     bar [34, 52, 91]
 ```
+
+_Illustrative marketing visualization, not a formal benchmark study._
 
 > Translation: less ceremony, more shipped output.
 
@@ -267,7 +269,7 @@ Not “AI but make it cute.”
 
 | Signal | Status |
 |---|---|
-| Unit + integration coverage | 114 tests historically documented as passing |
+| Unit + integration coverage | Repository docs report 114 unit/integration tests |
 | Tooling surface | 43+ tools |
 | CLI output modes | text / json / stream-json |
 | License | MIT |
