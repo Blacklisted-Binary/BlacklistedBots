@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="assets/logo.png" alt="Blacklisted Binary Labs" width="88" />
+  <img src="assets/logo.png" alt="BLACKLISTEDBOTS project logo" width="88" />
   <br/>
   <span>BLACKLISTEDBOTS</span>
 </h1>
@@ -29,6 +29,8 @@
 It is stylish, sharp, brutally practical, and mildly disrespectful toward boring software.
 
 If your current AI workflow still feels like “copy-paste and pray,” this README is your intervention.
+
+> Brand note: user-facing branding is **BLACKLISTEDBOTS** while parts of the current technical namespace still use `openharness` for compatibility.
 
 ---
 
@@ -125,19 +127,20 @@ flowchart LR
 
 ---
 
-## 📈 Operator Performance Narrative
-
-_Illustrative example chart only — values are not benchmark measurements._
+## 📈 Operator Workflow Journey
 
 ```mermaid
-xychart-beta
-    title "Illustrative Operator Impact Example (Non-Benchmark)"
-    x-axis ["Manual Script Stack", "Prompt-Only Setup", "BLACKLISTEDBOTS"]
-    y-axis "Illustrative Score (0-100)" 0 --> 100
-    bar [34, 52, 91]
+journey
+    title Operator Experience Shift (Illustrative)
+    section Legacy Workflow
+      Context switching everywhere: 2: Operator
+      Manual glue scripts: 2: Operator
+      Unclear governance: 1: Operator
+    section With BLACKLISTEDBOTS
+      Unified tool orchestration: 5: Operator
+      Governed execution flow: 5: Operator
+      Faster delivery rhythm: 5: Operator
 ```
-
-_This is an illustrative marketing visualization, not a formal benchmark study._
 
 > Translation: less ceremony, more shipped output.
 
@@ -167,14 +170,14 @@ _This is an illustrative marketing visualization, not a formal benchmark study._
 ### One-command install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/HKUDS/OpenHarness/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Blacklisted-Binary/BlacklistedBots/main/scripts/install.sh | bash
 ```
 
 ### Install from source
 
 ```bash
-git clone https://github.com/HKUDS/OpenHarness.git
-cd OpenHarness
+git clone https://github.com/Blacklisted-Binary/BlacklistedBots.git
+cd BlacklistedBots
 uv sync --extra dev
 ```
 
@@ -300,7 +303,7 @@ MIT — see [LICENSE](LICENSE).
 ---
 
 <p align="center">
-  <img src="assets/logo.png" alt="Blacklisted Binary Labs" width="56" />
+  <img src="assets/logo.png" alt="BLACKLISTEDBOTS project logo" width="56" />
   <br/>
   <strong>BLACKLISTEDBOTS</strong><br/>
   <em>Built by The Blacklisted Binary Labs · Where clean architecture meets chaotic charisma.</em>
