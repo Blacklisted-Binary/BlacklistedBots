@@ -127,11 +127,13 @@ flowchart LR
 
 ## 📈 Operator Performance Narrative
 
+_Illustrative example chart only — values are not benchmark measurements._
+
 ```mermaid
 xychart-beta
-    title "Perceived Operator Impact"
+    title "Illustrative Operator Impact Example (Non-Benchmark)"
     x-axis ["Manual Script Stack", "Prompt-Only Setup", "BLACKLISTEDBOTS"]
-    y-axis "Execution Efficiency" 0 --> 100
+    y-axis "Illustrative Score (0-100)" 0 --> 100
     bar [34, 52, 91]
 ```
 
